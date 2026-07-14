@@ -2,10 +2,10 @@ name: Daily interview-prep WhatsApp message
 
 on:
   schedule:
-    # Runs at 03:00 UTC = 08:30 IST every day.
-    # Adjust the hour to whenever you want the message to land — cron is in UTC,
-    # so IST = UTC + 5:30. For a 9:00 AM IST send, use "30 3 * * *".
-    - cron: "0 3 * * *"
+    # Runs every 2 hours from 09:00 to 23:00 IST (3:30-17:30 UTC, step 2h).
+    # IST = UTC + 5:30, so minute stays :30 all day. 8 runs/day: 9AM, 11AM,
+    # 1PM, 3PM, 5PM, 7PM, 9PM, 11PM IST.
+    - cron: "30 3-17/2 * * *"
   workflow_dispatch: {}   # lets you manually trigger a test run from the Actions tab
 
 permissions:
