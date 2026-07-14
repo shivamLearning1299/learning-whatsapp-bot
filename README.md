@@ -1,15 +1,14 @@
 # Daily interview-prep WhatsApp bot
 
 Sends yourself one interview-prep concept a day over WhatsApp, generated fresh
-by Claude, covering networking/OS/AI topics — runs automatically via GitHub
+by Groq, covering networking/OS/AI topics — runs automatically via GitHub
 Actions, no server to manage.
 
 ## How it works
 
 1. GitHub Actions triggers `send_daily_concept.py` on a daily cron schedule.
 2. The script reads `topics.json`, picks the next topic in rotation.
-3. Calls the Anthropic API to generate a short, interviewer-style explanation
-   (with prompt caching on the system prompt to reduce cost on repeated runs).
+3. Calls the Groq API to generate a short, interviewer-style explanation.
 4. Sends the message via Twilio's WhatsApp API.
 5. Advances the rotation pointer in `topics.json` and commits it back to the repo.
 
@@ -29,15 +28,15 @@ messages only work between your verified number and the sandbox — fine for
 personal use, but if you want a permanent production number later, Twilio
 requires WhatsApp Business API approval (a longer process, not needed here).
 
-### 2. Anthropic API key
+### 2. Groq API key
 
-Get one from console.anthropic.com if you don't already have one for other projects.
+Get one from console.groq.com if you don't already have one for other projects.
 
 ### 3. Repo secrets
 
 In your GitHub repo: Settings → Secrets and variables → Actions → New repository secret.
 Add all five:
-- `ANTHROPIC_API_KEY`
+- `GROQ_API_KEY`
 - `TWILIO_ACCOUNT_SID`
 - `TWILIO_AUTH_TOKEN`
 - `TWILIO_WHATSAPP_FROM` → `whatsapp:+14155238886` (sandbox number)
@@ -83,7 +82,7 @@ the list repeats for reinforcement.
 
 ## Notes on cost
 
-- Anthropic: each run is a tiny call (~400 output tokens max) — cost is
+- Groq: each run is a tiny call (~400 output tokens max) — cost is
   negligible even at 365 runs/year.
 - Twilio sandbox: free for testing/personal use.
 - GitHub Actions: well within the free tier for a once-daily job.
