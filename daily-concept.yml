@@ -1,0 +1,44 @@
+name: Daily interview-prep WhatsApp message
+
+on:
+  schedule:
+    # Runs at 03:00 UTC = 08:30 IST every day.
+    # Adjust the hour to whenever you want the message to land — cron is in UTC,
+    # so IST = UTC + 5:30. For a 9:00 AM IST send, use "30 3 * * *".
+    - cron: "0 3 * * *"
+  workflow_dispatch: {}   # lets you manually trigger a test run from the Actions tab
+
+permissions:
+  contents: write   # needed so the workflow can commit the updated topics.json back
+
+jobs:
+  send-daily-concept:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Send today's concept
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_WHATSAPP_FROM: ${{ secrets.TWILIO_WHATSAPP_FROM }}
+          MY_WHATSAPP_TO: ${{ secrets.MY_WHATSAPP_TO }}
+        run: python send_daily_concept.py
+
+      - name: Commit updated topic pointer
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add topics.json
+          git diff --staged --quiet || git commit -m "chore: advance daily topic pointer"
+          git push
